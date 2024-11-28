@@ -46,10 +46,13 @@ def gaussian_filter_3D(data3d):#三次元データを一層ずつガウシアン
     return gau_map
 
 
-def normalization(data):
-    norm_data = (data - np.min(data)) / (np.max(data) - np.min(data))
-
-    return norm_data
+def normalization(data_list):
+    norm_list = []
+    for i in range(len(data_list)):
+        data = data_list[i]
+        norm_data = (data - np.min(data)) / (np.max(data) - np.min(data))
+        norm_list.apend(norm_data)
+    return norm_list
 
 
 def data_integrate(data):
