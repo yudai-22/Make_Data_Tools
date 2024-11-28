@@ -51,7 +51,7 @@ def normalization(data_list):
     for i in range(len(data_list)):
         data = data_list[i]
         norm_data = (data - np.min(data)) / (np.max(data) - np.min(data))
-        norm_list.apend(norm_data)
+        norm_list.append(norm_data)
     return norm_list
 
 
