@@ -1,5 +1,7 @@
 # Make-Data-Tools
 
+```python
+
 def slide(image, square_size):
     
     _, height, width = image.shape
@@ -54,3 +56,4 @@ def data_integrate(data):
     integ_data = np.nansum(data, axis=0)
 
     return integ_data
+```
