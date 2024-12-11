@@ -1,3 +1,6 @@
+from scipy.signal import fftconvolve
+
+
 def slide(data, square_size):
     
     _, height, width = data.shape
@@ -33,6 +36,11 @@ def select_top(data_list, value):#valueには上位〇%の〇を入れる
 
 
 def gaussian_filter_3D(data3d):#三次元データを一層ずつガウシアンフィルター
+    #ガウシアンフィルターの定義
+    gaussian_num = [1, 4, 6, 4, 1]
+    gaussian_filter = np.outer(gaussian_num, gaussian_num)
+    gaussian_filter2 = gaussian_filter/np.sum(gaussian_filter)
+    
     gau_map_list = []
     for i in range(len(data3d)):
         gau = fftconvolve(data3d[i], gaussian_filter2, mode="valid")
