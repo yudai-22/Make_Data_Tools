@@ -13,7 +13,7 @@ def slide(data, square_size):
     return crops
 
 
-def remove_nan(data_list):
+def remove_nan(data_list):#データリストからnanを含むデータを除いたリストを返す
     no_nan_list = [data for data in data_list if not np.isnan(data).any()]
 
     return no_nan_list
