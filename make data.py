@@ -1,13 +1,13 @@
-def slide(image, square_size):
+def slide(data, square_size):
     
-    _, height, width = image.shape
+    _, height, width = data.shape
     step = square_size // 4  # 正方形の4分の1のサイズ
     
     crops = []
     for y in range(0, height - square_size + 1, step):
         for x in range(0, width - square_size + 1, step):
             # 指定した正方形サイズの画像を切り抜く
-            crop = image[:, y:y + square_size, x:x + square_size]
+            crop = data[:, y:y + square_size, x:x + square_size]
             crops.append(crop)
             
     return crops
@@ -55,3 +55,38 @@ def data_integrate(data):
     integ_data = np.nansum(data, axis=0)
 
     return integ_data
+
+
+def resize(data, size):
+    # NumPy配列をTorchテンソルに変換
+    data_torch = torch.from_numpy(data).unsqueeze(0)  # バッチ次元追加 (1, depth, height, width)
+    
+    # リサイズを実行 (depthを変更せず、高さと幅のみ)
+    resized_data = F.interpolate(data_torch, size=size, mode="bilinear", align_corners=False)
+    
+    # バッチ次元を削除し、NumPy配列に戻す
+    resized_data = resized_data.squeeze(0).numpy()
+    
+    return resized_data
+
+
+def integrate_to_x_layers(data, layers):
+    """
+    任意の深さを持つ三次元データを任意の層に積分する。
+    """
+    original_depth = data.shape[0]
+    target_depth = layers
+    
+    # 元の深さを12等分するインデックスを計算
+    edges = np.linspace(0, original_depth, target_depth + 1, dtype=int)
+    
+    # 新しい層に対する積分を計算
+    integrated_layers = []
+    for i in range(target_depth):
+        start, end = edges[i], edges[i + 1]
+        # 範囲内を積分（単純合計）
+        integrated_layer = np.sum(data[start:end], axis=0)
+        integrated_layers.append(integrated_layer)
+    
+    # 12層に統一されたデータを返す
+    return np.stack(integrated_layers)
