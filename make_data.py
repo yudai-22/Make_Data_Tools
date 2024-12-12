@@ -2,6 +2,10 @@ from scipy.signal import fftconvolve
 import numpy as np
 import torch
 
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
+from tqdm.notebook import tqdm
+
 
 def parallel_processing(function, target):#並列処理
     with ProcessPoolExecutor() as executor:
