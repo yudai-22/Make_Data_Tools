@@ -1,8 +1,17 @@
 from scipy.signal import fftconvolve
+import numpy as np
+import torch
+
+
+def parallel_processing(function, target):#並列処理
+    with ProcessPoolExecutor() as executor:
+        results = list(tqdm(executor.map(function, enumerate(target)), total=len(target)))
+        
+    return results
+
 
 
 def slide(data, square_size):
-    
     _, height, width = data.shape
     step = square_size // 4  # 正方形の4分の1のサイズ
     
@@ -16,10 +25,12 @@ def slide(data, square_size):
     return crops
 
 
+
 def remove_nan(data_list):#データリストからnanを含むデータを除いたリストを返す
     no_nan_list = [data for data in data_list if not np.isnan(data).any()]
 
     return no_nan_list
+
 
 
 def select_top(data_list, value):#valueには上位〇%の〇を入れる
@@ -33,6 +44,7 @@ def select_top(data_list, value):#valueには上位〇%の〇を入れる
     top_quarter_arrays = [arr for arr, s in zip(data_list, sums) if s >= threshold]
 
     return top_quarter_arrays
+
 
 
 def gaussian_filter_3D(data3d):#三次元データを一層ずつガウシアンフィルター
@@ -50,6 +62,7 @@ def gaussian_filter_3D(data3d):#三次元データを一層ずつガウシアン
     return gau_map
 
 
+
 def normalization(data_list):
     norm_list = []
     for i in range(len(data_list)):
@@ -58,11 +71,6 @@ def normalization(data_list):
         norm_list.append(norm_data)
     return norm_list
 
-
-def data_integrate(data):
-    integ_data = np.nansum(data, axis=0)
-
-    return integ_data
 
 
 def resize(data, size):
@@ -78,14 +86,22 @@ def resize(data, size):
     return resized_data
 
 
+
+def data_integrate(data):
+    integ_data = np.nansum(data, axis=0)
+
+    return integ_data
+
+
+
 def integrate_to_x_layers(data, layers):
     """
-    任意の深さを持つ三次元データを任意の層に積分する。
+    任意の深さを持つ三次元データをx層に積分する。
     """
     original_depth = data.shape[0]
     target_depth = layers
     
-    # 元の深さを12等分するインデックスを計算
+    # 元の深さをx等分するインデックスを計算
     edges = np.linspace(0, original_depth, target_depth + 1, dtype=int)
     
     # 新しい層に対する積分を計算
@@ -96,5 +112,5 @@ def integrate_to_x_layers(data, layers):
         integrated_layer = np.sum(data[start:end], axis=0)
         integrated_layers.append(integrated_layer)
     
-    # 12層に統一されたデータを返す
+    # x層に統一されたデータを返す
     return np.stack(integrated_layers)
