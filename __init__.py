@@ -113,7 +113,7 @@ def integrate_to_x_layers(data, layers):
     for i in range(target_depth):
         start, end = edges[i], edges[i + 1]
         # 範囲内を積分（単純合計）
-        integrated_layer = np.sum(data[start:end], axis=0)
+        integrated_layer = np.nansum(data[start:end], axis=0)
         integrated_layers.append(integrated_layer)
     
     # x層に統一されたデータを返す
