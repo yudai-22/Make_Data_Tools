@@ -118,3 +118,16 @@ def integrate_to_x_layers(data, layers):
     
     # x層に統一されたデータを返す
     return np.stack(integrated_layers)
+
+
+def mask(data, min_val, max_val):
+    rsm = np.square(data[min_val:max_val, :, :])
+    rsm = np.nanmean(rsm, axis=0)
+    rsm = np.sqrt(rsm)
+    
+    masked_array = data.copy()
+    for j in range(masked_array.shape[0]):  # 最初の次元
+        mask = masked_array[j, :, :] < rsm
+        masked_array[j, :, :][mask] = 0
+
+    return masked_array
