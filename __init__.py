@@ -51,19 +51,28 @@ def select_top(data_list, value):#valueには上位〇%の〇を入れる
 
 
 
-def gaussian_filter_3D(data3d):#三次元データを一層ずつガウシアンフィルター
+def gaussian_filter(data, mode="valid"):#三次元データでも二次元データでも一層ずつガウシアンフィルター
     #ガウシアンフィルターの定義
     gaussian_num = [1, 4, 6, 4, 1]
     gaussian_filter = np.outer(gaussian_num, gaussian_num)
     gaussian_filter2 = gaussian_filter/np.sum(gaussian_filter)
     
-    gau_map_list = []
-    for i in range(len(data3d)):
-        gau = fftconvolve(data3d[i], gaussian_filter2, mode="valid")
-        gau_map_list.append(gau)
-    gau_map = np.stack(gau_map_list, axis=0)
+    if len(data.shape) == 3:
+        gau_map_list = []
+        for i in range(len(data)):
+            gau = fftconvolve(data[i], gaussian_filter2, mode=mode)
+            gau_map_list.append(gau)
+        gau_map = np.stack(gau_map_list, axis=0)
 
-    return gau_map
+        return gau_map
+    
+    elif len(data.shape) == 2:
+        gau_map = fftconvolve(data, gaussian_filter2, mode=mode)
+
+        return gau_map
+    
+    else:
+        print("shape of data must be 2 or 3")
 
 
 
