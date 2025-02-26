@@ -130,7 +130,7 @@ def integrate_to_x_layers(data, layers):
 
 
 def mask(data, min_val, max_val):
-    rsm = np.square(data[min_val:max_val, :, :])
+    rsm = np.square(data[min_val:max_val+1, :, :])
     rsm = np.nanmean(rsm, axis=0)
     rsm = np.sqrt(rsm)
     
