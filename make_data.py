@@ -51,19 +51,28 @@ def select_top(data_list, value):#valueには上位〇%の〇を入れる
 
 
 
-def gaussian_filter_3D(data3d):#三次元データを一層ずつガウシアンフィルター
+def gaussian_filter(data, mode="valid"):#三次元データでも二次元データでも一層ずつガウシアンフィルター
     #ガウシアンフィルターの定義
     gaussian_num = [1, 4, 6, 4, 1]
     gaussian_filter = np.outer(gaussian_num, gaussian_num)
     gaussian_filter2 = gaussian_filter/np.sum(gaussian_filter)
     
-    gau_map_list = []
-    for i in range(len(data3d)):
-        gau = fftconvolve(data3d[i], gaussian_filter2, mode="valid")
-        gau_map_list.append(gau)
-    gau_map = np.stack(gau_map_list, axis=0)
+    if len(data.shape) == 3:
+        gau_map_list = []
+        for i in range(len(data)):
+            gau = fftconvolve(data[i], gaussian_filter2, mode=mode)
+            gau_map_list.append(gau)
+        gau_map = np.stack(gau_map_list, axis=0)
 
-    return gau_map
+        return gau_map
+    
+    elif len(data.shape) == 2:
+        gau_map = fftconvolve(data, gaussian_filter2, mode=mode)
+
+        return gau_map
+    
+    else:
+        print("shape of data must be 2 or 3")
 
 
 
@@ -113,8 +122,21 @@ def integrate_to_x_layers(data, layers):
     for i in range(target_depth):
         start, end = edges[i], edges[i + 1]
         # 範囲内を積分（単純合計）
-        integrated_layer = np.sum(data[start:end], axis=0)
+        integrated_layer = np.nansum(data[start:end], axis=0)
         integrated_layers.append(integrated_layer)
     
     # x層に統一されたデータを返す
     return np.stack(integrated_layers)
+
+
+def mask(data, min_val, max_val):
+    rsm = np.square(data[min_val:max_val+1, :, :])
+    rsm = np.nanmean(rsm, axis=0)
+    rsm = np.sqrt(rsm)
+    
+    masked_array = data.copy()
+    for j in range(masked_array.shape[0]):  # 最初の次元
+        mask = masked_array[j, :, :] < rsm
+        masked_array[j, :, :][mask] = 0
+
+    return masked_array
