@@ -24,7 +24,7 @@ def proccess_memmap(file_name, *data):
     
     # メモリから解放
     del merged_data
-   print("The save has completed!!")
+    print("The save has completed!!")
 
 
 def proccess_npyAppend(file_name, *data):
