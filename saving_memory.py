@@ -32,7 +32,7 @@ def proccess_npyAppend(file_name, *data):
     for part in data: 
       all_data += part
 
-    shape = data[0][0].shape
+    shape = all_data[0].shape
     num_arrays = len(all_data)
 
     mem = psutil.virtual_memory()
@@ -44,11 +44,13 @@ def proccess_npyAppend(file_name, *data):
     print(f"使用中のメモリ: {used / 2**30:.2f} GB")
     print(f"使用可能なメモリ: {free / 2**30:.2f} GB")
     
-    data_byte = np.prod(shape) * num_arrays * 8
-    print(f"総データ容量: {data_byte / 2**30:.2f} GB")
+    data_byte = np.prod(shape) * 8
+    print(f"\n一つあたりのデータ容量: {data_byte/ 2**20:.2f} MB")
+    print(f"総データ容量: {(data_byte * num_arrays) / 2**30:.2f} GB")
     
-    batch_size = data_byte // free + 1
-    print(f"バッチサイズ: {batch_size}")
+    batch_size = (free // data_byte) // 3
+    print(f"\n総データ数: {len(all_data)}")
+    print(f"バッチサイズ:\n {batch_size}")
 
     file_name = file_name + ".npy"
     saved_file = NpyAppendArray(file_name)
